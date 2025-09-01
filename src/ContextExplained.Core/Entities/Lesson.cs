@@ -14,6 +14,7 @@ public class Lesson
     public string Reflection { get; private set; } = null!;
     public DateTime CreatedAt { get; private set; }
 
+    private Lesson() { } // EF Core
     private Lesson(string book, int chapter, VerseRange verseRange, string passage, string context, string themes, string reflection)
     {
         ArgumentNullException.ThrowIfNullOrWhiteSpace(book);
@@ -24,6 +25,7 @@ public class Lesson
         ArgumentNullException.ThrowIfNullOrWhiteSpace(themes);
         ArgumentNullException.ThrowIfNullOrWhiteSpace(reflection);
 
+        Id = Guid.NewGuid();
         Book = book;
         Chapter = chapter;
         VerseRange = verseRange;
