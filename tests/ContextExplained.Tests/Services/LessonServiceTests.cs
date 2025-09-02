@@ -4,6 +4,7 @@ using ContextExplained.Core.DTOs;
 using Moq;
 using ContextExplained.Core.ValueObjects;
 using ContextExplained.Services;
+using ContextExplained.Tests.Common;
 
 namespace ContextExplained.Tests.Services;
 
@@ -11,26 +12,7 @@ public class LessonServiceTests
 {
     private readonly Mock<ILessonRepository> _mockRepo = new();
     private readonly Mock<ILLMService> _mockLLM = new();
-    private readonly Lesson _previousLesson = Lesson.Create(new LessonDTO
-    {
-        Book = "Genesis",
-        Chapter = 1,
-        VerseRange = new VerseRange(1, 10),
-        Passage = "In the beginning...",
-        Context = "Creation",
-        Themes = "God's work",
-        Reflection = "Reflect"
-    });
-    private readonly LessonDTO _newLessonDTO = new LessonDTO
-    {
-        Book = "Genesis",
-        Chapter = 1,
-        VerseRange = new VerseRange(11, 20),
-        Passage = "Next passage",
-        Context = "More creation",
-        Themes = "God's work",
-        Reflection = "Reflect more"
-    };
+    private readonly Lesson _previousLesson = Lesson.Create(FakeLessonDTOGenerator.Create());
 
 [Fact]
     public async Task GenerateAndSaveNextLessonAsync_ShouldCreateAndSaveLesson()
@@ -38,17 +20,19 @@ public class LessonServiceTests
         _mockRepo.Setup(r => r.GetPreviousLessonAsync())
             .ReturnsAsync(_previousLesson);
 
+        var newLessonDto = FakeLessonDTOGenerator.Create();
+
         _mockLLM.Setup(s => s.GenerateNextLessonAsync(
                 _previousLesson.BookChapterVerseRange(),
                 It.IsAny<string>()))
-            .ReturnsAsync(_newLessonDTO);
+            .ReturnsAsync(newLessonDto);
 
         var service = new LessonService(_mockRepo.Object, _mockLLM.Object);
 
         var result = await service.GenerateAndSaveNextLessonAsync("some prompt");
 
-        Assert.Equal(_newLessonDTO.Book, result.Book);
-        Assert.Equal(_newLessonDTO.Chapter, result.Chapter);
+        Assert.Equal(newLessonDto.Book, result.Book);
+        Assert.Equal(newLessonDto.Chapter, result.Chapter);
         _mockRepo.Verify(r => r.AddLessonAsync(It.IsAny<Lesson>()), Times.Once);
     }
 
@@ -68,9 +52,10 @@ public class LessonServiceTests
     [Fact]
     public async Task GetAllLessonsAsync_ShouldReturnAllLessons()
     {
+        var dto = FakeLessonDTOGenerator.Create();
         var lessons = new[]
         {
-            Lesson.Create(_newLessonDTO)
+            Lesson.Create(dto)
         };
 
         _mockRepo.Setup(r => r.GetAllLessonsAsync())
@@ -81,6 +66,6 @@ public class LessonServiceTests
         var result = await service.GetAllLessonsAsync();
 
         Assert.Single(result);
-        Assert.Equal("Genesis", result.First().Book);
+        Assert.Equal(dto.Book, result.First().Book);
     }
 }
