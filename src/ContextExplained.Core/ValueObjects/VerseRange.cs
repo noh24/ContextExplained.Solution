@@ -2,8 +2,8 @@
 
 public sealed class VerseRange
 {
-    public int Start { get; }
-    public int End { get; }
+    public int Start { get; private set; }
+    public int End { get; private set; }
 
     public VerseRange(int start, int end)
     {
