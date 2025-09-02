@@ -25,7 +25,6 @@ public class Lesson
         ArgumentNullException.ThrowIfNullOrWhiteSpace(themes);
         ArgumentNullException.ThrowIfNullOrWhiteSpace(reflection);
 
-        Id = Guid.NewGuid();
         Book = book;
         Chapter = chapter;
         VerseRange = verseRange;
