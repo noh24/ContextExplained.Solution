@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\ContextExplained.Core\ContextExplained.Core.csproj" />
+    <ProjectReference Include="..\..\src\ContextExplained.Services\ContextExplained.Services.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
