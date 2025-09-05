@@ -1,4 +1,5 @@
 ﻿using ContextExplained.Core.Entities;
+using ContextExplained.Core.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -23,5 +24,10 @@ public class LessonConfiguration : IEntityTypeConfiguration<Lesson>
         builder.Property(l => l.Context).IsRequired();
         builder.Property(l => l.Themes).IsRequired();
         builder.Property(l => l.Reflection).IsRequired();
+
+        builder.OwnsOne(l => l.PathType, pt =>
+        {
+            pt.Property(p => p.Value).HasColumnName("PathType").IsRequired();
+        });
     }
 }
