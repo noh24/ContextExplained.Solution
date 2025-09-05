@@ -1,5 +1,5 @@
-﻿using ContextExplained.Core.DTOs;
-using ContextExplained.Core.ValueObjects;
+﻿using ContextExplained.Core.ValueObjects;
+using System.Runtime.ConstrainedExecution;
 
 namespace ContextExplained.Core.Entities;
 public class Lesson
@@ -12,18 +12,20 @@ public class Lesson
     public string Context { get; private set; } = null!;
     public string Themes { get; private set; } = null!;
     public string Reflection { get; private set; } = null!;
+    public LessonPathType PathType { get; private set; }
     public DateTime CreatedAt { get; private set; }
 
     private Lesson() { } // EF Core
-    private Lesson(string book, int chapter, VerseRange verseRange, string passage, string context, string themes, string reflection)
+    private Lesson(string book, int chapter, VerseRange verseRange, string passage, string context, string themes, string reflection, LessonPathType pathType)
     {
-        ArgumentNullException.ThrowIfNullOrWhiteSpace(book);
+        ArgumentException.ThrowIfNullOrWhiteSpace(book);
         if (chapter <= 0) throw new ArgumentException(null, nameof(chapter));
         ArgumentNullException.ThrowIfNull(verseRange);
-        ArgumentNullException.ThrowIfNullOrWhiteSpace(passage);
-        ArgumentNullException.ThrowIfNullOrWhiteSpace(context);
-        ArgumentNullException.ThrowIfNullOrWhiteSpace(themes);
-        ArgumentNullException.ThrowIfNullOrWhiteSpace(reflection);
+        ArgumentException.ThrowIfNullOrWhiteSpace(passage);
+        ArgumentException.ThrowIfNullOrWhiteSpace(context);
+        ArgumentException.ThrowIfNullOrWhiteSpace(themes);
+        ArgumentException.ThrowIfNullOrWhiteSpace(reflection);
+        ArgumentNullException.ThrowIfNull(pathType);
 
         Book = book;
         Chapter = chapter;
@@ -32,26 +34,48 @@ public class Lesson
         Context = context;
         Themes = themes;
         Reflection = reflection;
+        PathType = pathType;
         CreatedAt = DateTime.UtcNow;
+    }
+
+    public static Lesson CreateChronological(LessonBuilder builder)
+    {
+        return new Lesson(
+            book: builder.Book,
+            chapter: builder.Chapter,
+            verseRange: builder.VerseRange,
+            passage: builder.Passage,
+            context: builder.Context,
+            themes: builder.Themes,
+            reflection: builder.Reflection,
+            pathType: LessonPathType.Chronological
+        );
     }
 
     public string BookChapterVerseRange()
     {
         return $"{Book} {Chapter}:{VerseRange}";
     }
+}
 
-    public static Lesson Create(LessonDTO dto)
+public class LessonBuilder
+{
+    public string Book { get; set; }
+    public int Chapter { get; set; }
+    public VerseRange  VerseRange { get; set; }
+    public string Passage { get; set; }
+    public string Context { get; set; }
+    public string Themes { get; set; }
+    public string Reflection { get; set; }
+
+    public LessonBuilder(string book, int chapter, VerseRange verseRange, string passage, string context, string themes, string reflection)
     {
-        ArgumentNullException.ThrowIfNull(dto);
-
-        return new Lesson(
-            book: dto.Book,
-            chapter: dto.Chapter,
-            verseRange: dto.VerseRange,
-            passage: dto.Passage,
-            context: dto.Context,
-            themes: dto.Themes,
-            reflection: dto.Reflection
-        );
+        Book = book;
+        Chapter = chapter;
+        VerseRange = verseRange;
+        Passage = passage;
+        Context = context;
+        Themes = themes;
+        Reflection = reflection;
     }
 }
