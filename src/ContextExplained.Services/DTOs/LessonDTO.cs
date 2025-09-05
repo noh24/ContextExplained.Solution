@@ -1,6 +1,6 @@
 ﻿using ContextExplained.Core.ValueObjects;
 
-namespace ContextExplained.Core.DTOs;
+namespace ContextExplained.Services.DTOs;
 
 public record LessonDTO
 {
