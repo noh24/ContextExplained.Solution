@@ -1,5 +1,7 @@
 ﻿using ContextExplained.Core.Entities;
 using ContextExplained.Core.Interfaces;
+using ContextExplained.Core.ValueObjects;
+using ContextExplained.Services.Interfaces;
 
 namespace ContextExplained.Services;
 
@@ -20,8 +22,8 @@ public class LessonService
             throw new InvalidOperationException("No previous lesson found.");
 
         var result = await _llmService.GenerateNextLessonAsync(previousLesson.BookChapterVerseRange(), prompt);
-
-        var newLesson = Lesson.Create(result);
+        var builder = new LessonBuilder(result.Book, result.Chapter, result.VerseRange, result.Passage, result.Context, result.Themes, result.Reflection);
+        var newLesson = Lesson.CreateChronological(builder);
 
         await _lessonRepo.AddLessonAsync(newLesson);
 
