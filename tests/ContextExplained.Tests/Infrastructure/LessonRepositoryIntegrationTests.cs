@@ -4,10 +4,10 @@ using ContextExplained.Core.ValueObjects;
 using ContextExplained.Infrastructure.Adapters;
 using ContextExplained.Infrastructure.Repositories;
 using ContextExplained.Infrastructure.DataSeeder;
-using ContextExplained.Tests.Common;
 using Microsoft.EntityFrameworkCore;
+using ContextExplained.Tests.Common;
 
-namespace ContextExplained.IntegrationTests;
+namespace ContextExplained.Tests.Infrastructure;
 
 public class LessonRepositoryIntegrationTests : IClassFixture<SqliteDbFixture>
 {

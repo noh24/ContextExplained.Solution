@@ -3,7 +3,7 @@ using ContextExplained.Core.Entities;
 using ContextExplained.Core.ValueObjects;
 using ContextExplained.Tests.Common;
 
-namespace ContextExplained.Tests.Domain;
+namespace ContextExplained.IntegrationTests.Domain;
 
 public class LessonTests
 {

@@ -1,7 +1,7 @@
 ﻿using ContextExplained.Core.Entities;
 using ContextExplained.Core.ValueObjects;
 
-namespace ContextExplained.Tests.Domain;
+namespace ContextExplained.IntegrationTests.Domain;
 
 public class LessonPathTests
 {

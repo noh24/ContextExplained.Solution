@@ -4,7 +4,7 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
-namespace ContextExplained.IntegrationTests;
+namespace ContextExplained.Tests.Infrastructure;
 
 public class SqliteDbFixture : IAsyncLifetime
 {

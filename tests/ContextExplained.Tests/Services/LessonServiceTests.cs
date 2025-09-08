@@ -7,7 +7,7 @@ using ContextExplained.Core.ValueObjects;
 using ContextExplained.Services;
 using ContextExplained.Tests.Common;
 
-namespace ContextExplained.Tests.Services;
+namespace ContextExplained.IntegrationTests.Services;
 
 public class LessonServiceTests
 {
