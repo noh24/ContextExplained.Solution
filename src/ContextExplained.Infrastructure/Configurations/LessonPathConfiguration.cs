@@ -10,7 +10,8 @@ public class LessonPathConfiguration : IEntityTypeConfiguration<LessonPath>
 {
     public void Configure(EntityTypeBuilder<LessonPath> builder)
     {
-        builder.Property(lp => lp.Id).HasDefaultValueSql("NEWSEQUENTIALID()");
+        builder.HasKey(lp => lp.Id);
+        builder.Property(lp => lp.Id).ValueGeneratedOnAdd();
 
         builder.Property(lp => lp.PathType)
             .HasConversion(

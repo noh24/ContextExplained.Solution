@@ -4,7 +4,7 @@ namespace ContextExplained.Core.Entities;
 
 public class LessonPath
 {
-    public Guid Id { get; private set; }
+    public int Id { get; private set; }
     public LessonPathType PathType { get; private set; }
     public string Book { get; private set; }
     public int Sequence { get; private set; }

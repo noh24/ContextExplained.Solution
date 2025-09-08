@@ -4,7 +4,7 @@ using System.Runtime.ConstrainedExecution;
 namespace ContextExplained.Core.Entities;
 public class Lesson
 {
-    public Guid Id { get; private set; }
+    public int Id { get; private set; }
     public string Book { get; private set; } = null!;
     public int Chapter { get; private set; }
     public VerseRange VerseRange { get; private set; }

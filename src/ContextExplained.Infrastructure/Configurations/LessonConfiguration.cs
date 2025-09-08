@@ -9,7 +9,8 @@ public class LessonConfiguration : IEntityTypeConfiguration<Lesson>
 {
     public void Configure(EntityTypeBuilder<Lesson> builder)
     {
-        builder.Property(l => l.Id).HasDefaultValueSql("NEWSEQUENTIALID()");
+        builder.HasKey(l => l.Id);
+        builder.Property(l => l.Id).ValueGeneratedOnAdd();
 
         builder.Property(l => l.Book).IsRequired();
         builder.Property(l => l.Chapter).IsRequired();
