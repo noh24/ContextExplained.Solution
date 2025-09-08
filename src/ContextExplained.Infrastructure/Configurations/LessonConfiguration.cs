@@ -26,9 +26,11 @@ public class LessonConfiguration : IEntityTypeConfiguration<Lesson>
         builder.Property(l => l.Themes).IsRequired();
         builder.Property(l => l.Reflection).IsRequired();
 
-        builder.OwnsOne(l => l.PathType, pt =>
-        {
-            pt.Property(p => p.Value).HasColumnName("PathType").IsRequired();
-        });
+        builder.Property(l => l.PathType)
+            .HasConversion(
+                v => v.Value,
+                v => new LessonPathType(v)
+            ).HasColumnName("PathType")
+            .IsRequired();
     }
 }
