@@ -8,34 +8,55 @@ namespace ContextExplained.Infrastructure.Repositories;
 
 public class LessonRepository : ILessonRepository
 {
-    private readonly ApplicationDbContext _db;
+    private readonly ApplicationDbContext _dbContext;
 
-    public LessonRepository(ApplicationDbContext db)
+    public LessonRepository(ApplicationDbContext dbContext)
     {
-        _db = db;
+        _dbContext = dbContext;
     }
     public async Task<Lesson?> GetPreviousLessonAsync()
     {
-        return await _db.Lessons
-            .OrderByDescending(l => LessonPaths.CanonicalOrder[l.Book])
-            .ThenBy(l => l.Chapter)
-            .ThenBy(l => l.VerseRange.Start)
+        if (!await _dbContext.LessonPaths.AnyAsync())
+            throw new InvalidOperationException("No LessonPaths exist in the system.");
+
+        return await _dbContext.Lessons
+            .Join(
+                _dbContext.LessonPaths,
+                lesson => new { lesson.PathType, lesson.Book },
+                path => new { path.PathType, path.Book },
+                (lesson, path) => new { Lesson = lesson, path.Sequence}
+            )
+            .Where(x => x.Lesson.PathType == LessonPathType.Chronological)
+            .OrderByDescending(x => x.Sequence)
+            .ThenByDescending(x => x.Lesson.Chapter)
+            .ThenByDescending(x => x.Lesson.VerseRange.End)
+            .Select(x => x.Lesson)
             .FirstOrDefaultAsync();
     }
 
     async Task ILessonRepository.AddLessonAsync(Lesson lesson)
     {
-        await _db.Lessons.AddAsync(lesson);
-        await _db.SaveChangesAsync();
+        await _dbContext.Lessons.AddAsync(lesson);
+        await _dbContext.SaveChangesAsync();
     }
 
     public async Task<IEnumerable<Lesson>> GetAllLessonsAsync()
     {
-        return await _db.Lessons
+        if (!await _dbContext.LessonPaths.AnyAsync())
+            throw new InvalidOperationException("No LessonPaths exist in the system.");
+
+        return await _dbContext.Lessons
+            .Join(_dbContext.LessonPaths,
+                lesson => new { lesson.PathType, lesson.Book },
+                path => new { path.PathType, path.Book },
+                (lesson, path) => new { Lesson = lesson, path.Sequence, VerseEnd = lesson.VerseRange.End }
+            )
             .AsNoTracking()
-            .OrderBy(l => LessonPaths.CanonicalOrder[l.Book])
-            .ThenBy(l => l.Chapter)
-            .ThenBy(l => l.VerseRange.Start)
+            .Where(x => x.Lesson.PathType == LessonPathType.Chronological)
+            .OrderByDescending(x => x.Sequence)
+            .ThenByDescending(x => x.Lesson.Chapter)
+            .ThenByDescending(x => x.VerseEnd)
+            .Select(x => x.Lesson)
             .ToListAsync();
     }
 }
