@@ -21,7 +21,7 @@ public class LessonService
         var previousLesson = await _lessonRepo.GetPreviousLessonAsync() ??
             throw new InvalidOperationException("No previous lesson found.");
 
-        var result = await _llmService.GenerateNextLessonAsync(previousLesson.BookChapterVerseRange(), prompt);
+        var result = await _llmService.GenerateNextLessonAsync(previousLesson.BookChapterVerseRange, prompt);
         var builder = new LessonBuilder(result.Book, result.Chapter, result.VerseRange, result.Passage, result.Context, result.Themes, result.Reflection);
         var newLesson = Lesson.CreateChronological(builder);
 

@@ -1,5 +1,4 @@
 ﻿using ContextExplained.Core.ValueObjects;
-using System.Runtime.ConstrainedExecution;
 
 namespace ContextExplained.Core.Entities;
 public class Lesson
@@ -14,6 +13,8 @@ public class Lesson
     public string Reflection { get; private set; } = null!;
     public LessonPathType PathType { get; private set; }
     public DateTime CreatedAt { get; private set; }
+
+    public string BookChapterVerseRange => $"{Book} {Chapter}:{VerseRange}";
 
     private Lesson() { } // EF Core
     private Lesson(string book, int chapter, VerseRange verseRange, string passage, string context, string themes, string reflection, LessonPathType pathType)
@@ -50,11 +51,6 @@ public class Lesson
             reflection: builder.Reflection,
             pathType: LessonPathType.Chronological
         );
-    }
-
-    public string BookChapterVerseRange()
-    {
-        return $"{Book} {Chapter}:{VerseRange}";
     }
 }
 

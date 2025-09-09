@@ -24,7 +24,7 @@ public class LessonServiceTests
         var newLesson = FakeLessonGenerator.CreateRandom();
 
         _mockLLM.Setup(s => s.GenerateNextLessonAsync(
-                _previousLesson.BookChapterVerseRange(),
+                _previousLesson.BookChapterVerseRange,
                 It.IsAny<string>()))
             .ReturnsAsync(new LessonDTO { 
                 Book = newLesson.Book,
