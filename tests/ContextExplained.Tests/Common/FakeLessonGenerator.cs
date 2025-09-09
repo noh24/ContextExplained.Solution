@@ -7,10 +7,10 @@ public static class FakeLessonGenerator
 {
     private static readonly Random _rand = new();
 
-    public static Lesson Create(string book, int chapter, VerseRange verseRange)
+    public static Lesson Create(BibleBook book, int chapter, VerseRange verseRange)
     {
         var passage = $"{book} {chapter} {verseRange}";
-        var builder = new LessonBuilder(book, chapter, verseRange, passage, "context", "themes", "reflection");
+        var builder = new LessonBuilder(book.Name, chapter, verseRange, passage, "context", "themes", "reflection");
         var lesson = Lesson.CreateChronological(builder);
 
         return lesson;
