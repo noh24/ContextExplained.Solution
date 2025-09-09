@@ -1,6 +1,4 @@
-﻿using System.Reflection.Metadata.Ecma335;
-
-namespace ContextExplained.Core.ValueObjects;
+﻿namespace ContextExplained.Core.ValueObjects;
 
 public sealed class VerseRange
 {
