@@ -35,4 +35,11 @@ public class SqliteDbFixture : IAsyncLifetime
     {
         await Context.DisposeAsync();
     }
+
+    public async Task ClearDatabaseAsync()
+    {
+        Context.Lessons.RemoveRange(Context.Lessons);
+        Context.LessonPaths.RemoveRange(Context.LessonPaths);
+        await Context.SaveChangesAsync();
+    }
 }
