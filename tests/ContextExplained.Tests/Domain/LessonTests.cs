@@ -26,8 +26,8 @@ public class LessonTests
     [Fact]
     public void BooKChapterVerseRange_ShouldReturnCorrectString()
     {
-        var lesson = FakeLessonGenerator.Create(book: "Genesis", chapter: 1, verseRange: new VerseRange(1, 5));
-        Assert.Equal("Genesis 1:1-5", lesson.BookChapterVerseRange());
+        var lesson = FakeLessonGenerator.Create(BibleBook.Genesis, chapter: 1, verseRange: new VerseRange(1, 5));
+        Assert.Equal("Genesis 1:1-5", lesson.BookChapterVerseRange);
 
     }
 }
