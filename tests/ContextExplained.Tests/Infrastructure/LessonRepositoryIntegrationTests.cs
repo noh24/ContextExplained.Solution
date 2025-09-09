@@ -61,8 +61,8 @@ public class LessonRepositoryIntegrationTests : RepositoryTestBase
     {
         SeedLessonPath();
 
-        var lesson1 = FakeLessonGenerator.Create(BibleBook.Genesis.Name, 1, new VerseRange(1, 5));
-        var lesson2 = FakeLessonGenerator.Create(BibleBook.Genesis.Name, 1, new VerseRange(5, 10));
+        var lesson1 = FakeLessonGenerator.Create(BibleBook.Genesis, 1, new VerseRange(1, 5));
+        var lesson2 = FakeLessonGenerator.Create(BibleBook.Genesis, 1, new VerseRange(5, 10));
 
         await DbContext.Lessons.AddRangeAsync(lesson1, lesson2);
         await DbContext.SaveChangesAsync();
@@ -71,18 +71,58 @@ public class LessonRepositoryIntegrationTests : RepositoryTestBase
         var lessons = result.ToList();
 
         Assert.Equal(2, lessons.Count);
-        Assert.Equal(lesson2.BookChapterVerseRange(), lessons[0].BookChapterVerseRange());
-        Assert.Equal(lesson1.BookChapterVerseRange(), lessons[1].BookChapterVerseRange());
+        Assert.Equal(lesson2.BookChapterVerseRange, lessons[0].BookChapterVerseRange);
+        Assert.Equal(lesson1.BookChapterVerseRange, lessons[1].BookChapterVerseRange);
     }
 
-    //[Fact]
-    //public async Task GetAllLessonAsync_ReturnsChronologicaly_WhenDifferentBook()
-    //{
-    //    var lesson1 = FakeLessonGenerator.CreateChronological(Books.1Peter);
-    //}
+    [Fact]
+    public async Task GetAllLessonAsync_ReturnsChronologicaly_WhenDifferentBook()
+    {
+        SeedLessonPath();
 
+        var exodus = FakeLessonGenerator.Create(BibleBook.Exodus, 1, new VerseRange(15,30));
+        var genesis = FakeLessonGenerator.Create(BibleBook.Genesis, 2, new VerseRange(15,30));
+        var numbers = FakeLessonGenerator.Create(BibleBook.Numbers, 15, new VerseRange(1, 30));
 
-    
-    
+        await DbContext.AddRangeAsync(exodus, genesis, numbers);
+        await DbContext.SaveChangesAsync();
+
+        var result = await _repository.GetAllLessonsAsync();
+        var lessons = result.ToList();
+
+        Assert.Equal(3, lessons.Count);
+        Assert.Equal(numbers.BookChapterVerseRange, lessons[0].BookChapterVerseRange);
+        Assert.Equal(exodus.BookChapterVerseRange,lessons[1].BookChapterVerseRange);
+        Assert.Equal(genesis.BookChapterVerseRange, lessons[2].BookChapterVerseRange);
+    }
+
+    [Fact]
+    public async Task GetAllLessonsAsync_ShouldThrow_WhenNoLessonPath()
+    {
+        var fakeLessons = FakeLessonGenerator.CreateManyRandom(2);
+
+        await DbContext.AddRangeAsync(fakeLessons);
+        await DbContext.SaveChangesAsync();
+
+        await Assert.ThrowsAsync<InvalidOperationException>(_repository.GetAllLessonsAsync);
+    }
+
+    [Fact]
+    public async Task GetPreviousLessonAsync_ReturnMostRecentLesson_WhenSameBookAndChapter()
+    {
+        SeedLessonPath();
+
+        var genesis = FakeLessonGenerator.Create(BibleBook.Genesis, 1, new VerseRange(1, 5));
+        var genesis2 = FakeLessonGenerator.Create(BibleBook.Genesis, 1, new VerseRange(10, 15));
+        //var numbers = FakeLessonGenerator.Create(BibleBook.Numbers, 5, new VerseRange(20, 30));
+
+        await DbContext.AddRangeAsync(genesis, genesis2);
+        await DbContext.SaveChangesAsync();
+
+        var result = await _repository.GetPreviousLessonAsync();
+
+        Assert.Equal(genesis2.BookChapterVerseRange, result?.BookChapterVerseRange);
+    }
+
 }
 
