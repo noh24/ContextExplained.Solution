@@ -13,7 +13,7 @@ public class LessonServiceTests
 {
     private readonly Mock<ILessonRepository> _mockRepo = new();
     private readonly Mock<ILLMService> _mockLLM = new();
-    private readonly Lesson _previousLesson = FakeLessonGenerator.CreateChronological();
+    private readonly Lesson _previousLesson = FakeLessonGenerator.CreateRandom();
 
 [Fact]
     public async Task GenerateAndSaveNextLessonAsync_ShouldCreateAndSaveLesson()
@@ -21,7 +21,7 @@ public class LessonServiceTests
         _mockRepo.Setup(r => r.GetPreviousLessonAsync())
             .ReturnsAsync(_previousLesson);
 
-        var newLesson = FakeLessonGenerator.CreateChronological();
+        var newLesson = FakeLessonGenerator.CreateRandom();
 
         _mockLLM.Setup(s => s.GenerateNextLessonAsync(
                 _previousLesson.BookChapterVerseRange(),
@@ -64,7 +64,7 @@ public class LessonServiceTests
     {
         var lessons = new[]
         {
-            FakeLessonGenerator.CreateChronological()
+            FakeLessonGenerator.CreateRandom()
         };
 
         _mockRepo.Setup(r => r.GetAllLessonsAsync())

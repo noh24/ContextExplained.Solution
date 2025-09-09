@@ -10,7 +10,7 @@ public class LessonTests
     [Fact]
     public void CreateChronological_ShouldReturnLesson_WhenDTOIsValid()
     {
-        var lesson = FakeLessonGenerator.CreateChronological();
+        var lesson = FakeLessonGenerator.CreateRandom();
 
         Assert.Equal(lesson.Book, lesson.Book);
         Assert.Equal(lesson.Chapter, lesson.Chapter);
@@ -26,7 +26,7 @@ public class LessonTests
     [Fact]
     public void BooKChapterVerseRange_ShouldReturnCorrectString()
     {
-        var lesson = FakeLessonGenerator.CreateChronological(book: "Genesis", chapter: 1, verseRange: new VerseRange(1, 5));
+        var lesson = FakeLessonGenerator.Create(book: "Genesis", chapter: 1, verseRange: new VerseRange(1, 5));
         Assert.Equal("Genesis 1:1-5", lesson.BookChapterVerseRange());
 
     }
