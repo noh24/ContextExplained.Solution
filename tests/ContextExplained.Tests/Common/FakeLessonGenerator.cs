@@ -10,11 +10,8 @@ public static class FakeLessonGenerator
     public static Lesson Create(string book, int chapter, VerseRange verseRange)
     {
         var passage = $"{book} {chapter} {verseRange}";
-        Console.WriteLine($"Entered Lesson {book} {chapter} {verseRange}");
         var builder = new LessonBuilder(book, chapter, verseRange, passage, "context", "themes", "reflection");
-        Console.WriteLine($"LessonBuilder  {builder.Book} {builder.Chapter} {builder.VerseRange}");
         var lesson = Lesson.CreateChronological(builder);
-        Console.WriteLine($"New Lesson {lesson.Book} {lesson.Chapter} {lesson.VerseRange}");
 
         return lesson;
     }

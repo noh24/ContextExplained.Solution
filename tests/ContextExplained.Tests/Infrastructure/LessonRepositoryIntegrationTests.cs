@@ -68,10 +68,6 @@ public class LessonRepositoryIntegrationTests : RepositoryTestBase
         await DbContext.SaveChangesAsync();
 
         var result = await _repository.GetAllLessonsAsync();
-        foreach (var lesson in result)
-        {
-            Console.WriteLine($"Repo returning {lesson.BookChapterVerseRange()}");
-        }
         var lessons = result.ToList();
 
         Assert.Equal(2, lessons.Count);
