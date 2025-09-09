@@ -13,7 +13,7 @@ public static class LessonPathSeeder
             var chronologicalPath = new List<LessonPath>();
             foreach (var (book, sequence) in LessonPathsArchive.Chronological)
             {
-                chronologicalPath.Add(new LessonPath(LessonPathType.Chronological, book, sequence));
+                chronologicalPath.Add(new LessonPath(LessonPathType.Chronological, book.Name, sequence));
             }
 
             db.AddRange(chronologicalPath);
