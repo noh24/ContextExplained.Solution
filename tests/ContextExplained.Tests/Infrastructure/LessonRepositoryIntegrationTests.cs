@@ -9,51 +9,28 @@ using ContextExplained.Tests.Common;
 using Microsoft.Data.Sqlite;
 
 namespace ContextExplained.Tests.Infrastructure;
-public abstract class RepositoryTestBase
+
+public class LessonRepositoryIntegrationTests : RepositoryTestBase
 {
-    protected async Task<ApplicationDbContext> CreateContextAsync(Func<ApplicationDbContext, Task>? seeder = null)
-    {
-        var connection = new SqliteConnection("Filename=:memory");
-        connection.Open();
-
-        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseSqlite(connection)
-            .Options;
-
-        var context = new ApplicationDbContext(options);
-        
-        if (seeder != null)
-        {
-            await seeder(context);
-        }
-
-        return context;
-    }
-}
-public class LessonRepositoryIntegrationTests : IClassFixture<SqliteDbFixture>
-{
-    private readonly ApplicationDbContext _dbContext;
     private readonly LessonRepository _repository;
-    private readonly SqliteDbFixture _fixture;
 
-    public LessonRepositoryIntegrationTests(SqliteDbFixture fixture)
+    public LessonRepositoryIntegrationTests()
     {
-        _fixture = fixture;
-        _dbContext = fixture.Context;
-        _repository = new LessonRepository(_dbContext);
+        CreateContextAsync();
+        _repository = new LessonRepository(DbContext);
     }
 
-    private async Task SeedLessonPath()
+    private void SeedLessonPath()
     {
-        await _fixture.SeedAsync(LessonPathSeeder.SeedAsync);
+        SeedDataAsync(LessonPathSeeder.SeedAsync);
     }
     [Fact]
     public async Task TestSeeding()
     {
-        await _fixture.ClearDatabaseAsync();
-        await SeedLessonPath();
+        SeedLessonPath();
 
-        var lessonPaths = await _dbContext.LessonPaths.ToListAsync();
+        var lessonPaths = await DbContext.LessonPaths.ToListAsync();
+
         Assert.NotEmpty(lessonPaths);
         
         var genesisPath = lessonPaths.FirstOrDefault(lp => lp.Book.Contains(BibleBook.Genesis.Name));
@@ -65,13 +42,12 @@ public class LessonRepositoryIntegrationTests : IClassFixture<SqliteDbFixture>
     [Fact]
     public async Task GetAllLessonsAsync_ReturnsAllLessons()
     {
-        await _fixture.ClearDatabaseAsync();
-        await SeedLessonPath();
+        SeedLessonPath();
 
         var lessons = FakeLessonGenerator.CreateManyRandom(2).ToList();
 
-        await _dbContext.Lessons.AddRangeAsync(lessons);
-        await _dbContext.SaveChangesAsync();
+        await DbContext.Lessons.AddRangeAsync(lessons);
+        await DbContext.SaveChangesAsync();
 
         var getLessons = await _repository.GetAllLessonsAsync();
 
@@ -83,14 +59,13 @@ public class LessonRepositoryIntegrationTests : IClassFixture<SqliteDbFixture>
     [Fact]
     public async Task GetAllLessonsAsync_ReturnsChronologically_WhenSameBookAndChapter()
     {
-        await _fixture.ClearDatabaseAsync();
-        await SeedLessonPath();
+        SeedLessonPath();
 
         var lesson1 = FakeLessonGenerator.Create(BibleBook.Genesis.Name, 1, new VerseRange(1, 5));
         var lesson2 = FakeLessonGenerator.Create(BibleBook.Genesis.Name, 1, new VerseRange(5, 10));
 
-        await _dbContext.Lessons.AddRangeAsync(lesson1, lesson2);
-        await _dbContext.SaveChangesAsync();
+        await DbContext.Lessons.AddRangeAsync(lesson1, lesson2);
+        await DbContext.SaveChangesAsync();
 
         var result = await _repository.GetAllLessonsAsync();
         foreach (var lesson in result)
@@ -99,6 +74,7 @@ public class LessonRepositoryIntegrationTests : IClassFixture<SqliteDbFixture>
         }
         var lessons = result.ToList();
 
+        Assert.Equal(2, lessons.Count);
         Assert.Equal(lesson2.BookChapterVerseRange(), lessons[0].BookChapterVerseRange());
         Assert.Equal(lesson1.BookChapterVerseRange(), lessons[1].BookChapterVerseRange());
     }
